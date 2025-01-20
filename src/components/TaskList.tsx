@@ -107,7 +107,7 @@ export default function TaskList({
 
       {/* Active Task */}
       {activeTask ? (
-        <div className="backdrop-blur-lg rounded-xl p-6 mb-4 max-w-sm shadow-2xl bg-white/10">
+        <div className="backdrop-blur-lg rounded-xl p-6 mb-4 max-w-sm shadow-2xl bg-gray-400/30">
           <div className="text-sm text-white/70 mb-2 uppercase tracking-wider font-medium">Current Focus</div>
           <div className="text-xl text-white font-medium">{activeTask.title}</div>
           <div className="flex items-center justify-end mt-4">
@@ -124,14 +124,14 @@ export default function TaskList({
       ) : (
         <button
           onClick={onAddTask}
-          className="backdrop-blur-lg rounded-xl p-6 mb-4 text-white/70 bg-white/10 hover:text-white hover:bg-white/20 transition-all shadow-2xl"
+          className="backdrop-blur-lg rounded-xl p-6 mb-4 text-white/70 bg-gray-400/30 hover:text-white hover:bg-white/20 transition-all shadow-2xl"
         >
           + Add your next task
         </button>
       )}
 
       {/* Next Up Section */}
-      <div className="backdrop-blur-xl rounded-xl p-6 w-[300px] shadow-2xl bg-white/10 max-h-60 overflow-y-auto">
+      <div className="backdrop-blur-lg rounded-xl p-6 w-[300px] shadow-2xl bg-gray-400/30 max-h-60 overflow-y-auto">
         <div className="flex justify-between items-center mb-4">
           <button 
             onClick={onToggleExpand}
@@ -189,7 +189,7 @@ export default function TaskList({
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
-                  className="text-white/30 text-center py-2"
+                  className="text-white/80 text-center py-2"
                 >
                   No tasks yet
                 </motion.div>
@@ -206,7 +206,7 @@ export default function TaskList({
       </div>
 
       {/* Completed Tasks Section */}
-      <div className="backdrop-blur-xl rounded-xl p-6 w-[300px] shadow-2xl bg-white/10 mt-4 max-h-60 overflow-y-auto">
+      <div className="backdrop-blur-xl rounded-xl p-6 w-[300px] shadow-2xl bg-gray-400/30 mt-4 max-h-60 overflow-y-auto">
         <div className="flex justify-between items-center mb-4">
           <button 
             onClick={toggleCompletedTasks}

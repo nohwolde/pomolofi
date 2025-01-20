@@ -74,7 +74,7 @@ export default function MusicPlayer() {
           max="100"
           value={volume}
           onChange={handleVolumeChange}
-          className="slider"
+          className="slider accent-sky-200"
         />
       </div>
       <div className="flex items-center mb-4">
