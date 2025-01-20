@@ -2,23 +2,25 @@
 
 import { useState } from 'react'
 import Image from 'next/image'
+import beachImg from '@/scenes/beach.jpg'
+import cafeImg from '@/scenes/beach.jpg'
 
 type Scene = {
   id: string
   name: string
-  background: string
+  background: any
 }
 
 const scenes: Scene[] = [
   {
     id: 'cozy-cafe',
     name: 'Cozy Café',
-    background: '/scenes/cozy-cafe.jpg',
+    background: cafeImg,
   },
   {
     id: 'beach',
     name: 'Beach',
-    background: '/scenes/beach.jpg',
+    background: beachImg,
   },
   // Add more scenes here
 ]

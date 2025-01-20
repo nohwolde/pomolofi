@@ -8,6 +8,8 @@ import SideControls from '@/components/SideControls'
 import MiniTimer from '@/components/MiniTimer'
 import MusicPlayer from '@/components/MusicPlayer'
 import TimerCompleteModal from '../components/TimerCompleteModal'
+import beachImg from '@/scenes/beach.jpg'
+import cafeImg from '@/scenes/cozy-cafe.jpg'
 
 type TimerMode = 'pomodoro' | 'shortBreak' | 'longBreak'
 
@@ -15,12 +17,12 @@ const scenes = [
   {
     id: 'cozy-cafe',
     name: 'Cozy Café',
-    background: '/scenes/cozy-cafe.jpg',
+    background: cafeImg,
   },
   {
     id: 'beach',
     name: 'Beach',
-    background: '/scenes/beach.jpg',
+    background: beachImg,
   },
   // Add more scenes here
 ]
