@@ -254,7 +254,7 @@ export default function TaskList({
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
-                  className="text-white/30 text-center py-2"
+                  className="text-white/80 text-center py-2"
                 >
                   No completed tasks yet
                 </motion.div>

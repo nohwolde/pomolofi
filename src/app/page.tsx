@@ -10,6 +10,7 @@ import MusicPlayer from '@/components/MusicPlayer'
 import TimerCompleteModal from '../components/TimerCompleteModal'
 import beachImg from '@/scenes/beach.jpg'
 import cafeImg from '@/scenes/cozy-cafe.jpg'
+import { motion } from 'framer-motion'
 
 type TimerMode = 'pomodoro' | 'shortBreak' | 'longBreak'
 
@@ -300,8 +301,19 @@ export default function Home() {
 
         {/* Add Task Modal */}
         {showAddTask && (
-          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 pointer-events-auto">
-            <div className="glass-effect rounded-2xl p-6 w-[400px]">
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50"
+            onClick={(e) => e.target === e.currentTarget && setShowAddTask(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="glass-effect rounded-3xl p-8 w-[400px] text-center"
+            >
               <h2 className="text-xl text-white/90 mb-4">Add New Task</h2>
               <input
                 type="text"
@@ -326,8 +338,8 @@ export default function Home() {
                   Add Task
                 </button>
               </div>
-            </div>
-          </div>
+            </motion.div>
+          </motion.div>
         )}
 
         {/* Timer Complete Modal */}
