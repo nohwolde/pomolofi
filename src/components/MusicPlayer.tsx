@@ -6,7 +6,7 @@ import { FaPlay, FaPause, FaBackward, FaForward, FaVolumeMute, FaVolumeUp } from
 
 const streams = [
     {
-        id: 'lofi',
+        id: 'lofi-girl',
         name: 'Lofi Girl',
         artist: '@LofiGirl',
         videoId: 'jfKfPfyJRdk',
@@ -52,9 +52,21 @@ export default function MusicPlayer() {
 
   const currentStream = streams[currentStreamIndex]
 
+  // Load initial stream from localStorage
+  useEffect(() => {
+    const storedStreamId = localStorage.getItem('currentStreamId')
+    if (storedStreamId) {
+      const index = streams.findIndex(stream => stream.id === storedStreamId)
+      if (index !== -1) {
+        setCurrentStreamIndex(index)
+      }
+    }
+  }, [])
+
   const handleStreamChange = (index: number) => {
     setCurrentStreamIndex(index)
-    setIsPlaying(true) // Auto-play when changing streams
+    setIsPlaying(true)
+    localStorage.setItem('currentStreamId', streams[index].id)
   }
 
   const handlePlayPause = () => {
@@ -83,11 +95,21 @@ export default function MusicPlayer() {
   }
 
   const handlePreviousStream = () => {
-    setCurrentStreamIndex((prevIndex) => (prevIndex === 0 ? streams.length - 1 : prevIndex - 1))
+    setCurrentStreamIndex((prevIndex) => {
+      const newIndex = prevIndex === 0 ? streams.length - 1 : prevIndex - 1
+      localStorage.setItem('currentStreamId', streams[newIndex].id)
+      return newIndex
+    })
+    setIsPlaying(true)
   }
 
   const handleNextStream = () => {
-    setCurrentStreamIndex((prevIndex) => (prevIndex === streams.length - 1 ? 0 : prevIndex + 1))
+    setCurrentStreamIndex((prevIndex) => {
+      const newIndex = prevIndex === streams.length - 1 ? 0 : prevIndex + 1
+      localStorage.setItem('currentStreamId', streams[newIndex].id)
+      return newIndex
+    })
+    setIsPlaying(true)
   }
 
   return (
