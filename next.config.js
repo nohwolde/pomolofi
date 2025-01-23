@@ -26,6 +26,11 @@ const nextConfig = {
         issuer: fileLoaderRule.issuer,
         resourceQuery: { not: [...fileLoaderRule.resourceQuery.not, /url/] }, // exclude if *.svg?url
         use: ["@svgr/webpack"],
+      },
+      // Add MP4 handling
+      {
+        test: /\.(mp4|webm)$/i,
+        type: "asset/resource",
       }
     );
 

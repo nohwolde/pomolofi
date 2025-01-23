@@ -10,6 +10,7 @@ type Scene = {
   id: string
   name: string
   background: any
+  type: 'image' | 'video'  // Add type to distinguish between media types
 }
 
 const scenes: Scene[] = [
@@ -17,11 +18,19 @@ const scenes: Scene[] = [
     id: 'cozy-cafe',
     name: 'Cozy Café',
     background: cafeImg,
+    type: 'image',
   },
   {
     id: 'beach',
     name: 'Beach',
     background: beachImg,
+    type: 'image',
+  },
+  {
+    id: 'snow',
+    name: 'Snowy Scene',
+    background: '/scenes/0snow.mp4',
+    type: 'video',
   },
   // Add more scenes here
 ]
@@ -38,13 +47,26 @@ export default function Environment({ currentScene }: EnvironmentProps) {
         animate={{ opacity: 1, height: 'auto' }}
         exit={{ opacity: 0, height: 0 }}
       >
-      <Image
-        src={currentScene.background}
-        alt={currentScene.name}
-        fill
-        priority
-        className="object-cover"
-        />
+        {currentScene.type === 'video' ? (
+          <video
+            key={currentScene.id}
+            autoPlay
+            loop
+            muted
+            playsInline
+            className="absolute inset-0 w-full h-full object-cover"
+          >
+            <source src={currentScene.background} type="video/mp4" />
+          </video>
+        ) : (
+          <Image
+            src={currentScene.background}
+            alt={currentScene.name}
+            fill
+            priority
+            className="object-cover"
+          />
+        )}
       </motion.div>
     </AnimatePresence>
   )

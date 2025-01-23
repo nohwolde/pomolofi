@@ -11,25 +11,66 @@ import TimerCompleteModal from '../components/TimerCompleteModal'
 import beachImg from '@/scenes/beach.jpg'
 import cafeImg from '@/scenes/cozy-cafe.jpg'
 import { motion } from 'framer-motion'
+import EnvironmentModal from '@/components/EnvironmentModal'
+import { StaticImageData } from 'next/image'
 
 type TimerMode = 'pomodoro' | 'shortBreak' | 'longBreak'
 
+interface Scene {
+  id: string
+  name: string
+  background: string | StaticImageData
+  type: 'video' | 'image'
+}
+
 const scenes = [
+  {
+    id: 'snow',
+    name: 'Snowy Scene',
+    background: '/scenes/0snow.mp4',  // Path from public folder
+    type: 'video',
+  },
   {
     id: 'cozy-cafe',
     name: 'Cozy Café',
     background: cafeImg,
+    type: 'image',
   },
   {
     id: 'beach',
     name: 'Beach',
     background: beachImg,
+    type: 'image',
   },
+  {
+    id: 'sunbeam-forest',
+    name: 'Sunbeam Forest',
+    background: '/scenes/sunbeam-forest.mp4',  // Path from public folder
+    type: 'video',
+  },
+  {
+    id: 'autumn-lake',
+    name: 'Autumn Lake',
+    background: '/scenes/autumn-lake.mp4',  // Path from public folder
+    type: 'video',
+  }, 
+  {
+    id: 'magical-forest',
+    name: 'Magical Forest',
+    background: '/scenes/magical-forest.mp4',  // Path from public folder
+    type: 'video',
+  },
+  {
+    id: 'black-hole', 
+    name: 'Black Hole',
+    background: '/scenes/black-hole.mp4',  // Path from public folder
+    type: 'video',
+  }
   // Add more scenes here
-]
+] as const;
 
 export default function Home() {
-  const [currentSceneIndex, setCurrentSceneIndex] = useState(0)
+  const [currentSceneId, setCurrentSceneId] = useState<string>('snow') // Default scene
   const [isTimerOpen, setIsTimerOpen] = useState(false)
   const [isTasksExpanded, setIsTasksExpanded] = useState(false)
   const [showAddTask, setShowAddTask] = useState(false)
@@ -44,6 +85,7 @@ export default function Home() {
   const [completedMode, setCompletedMode] = useState<TimerMode>('pomodoro')
   const [alarmAudio, setAlarmAudio] = useState<HTMLAudioElement | null>(null)
   const [isInitialLoad, setIsInitialLoad] = useState(true)
+  const [isEnvironmentModalOpen, setIsEnvironmentModalOpen] = useState(false)
 
   // Timer durations from localStorage
   const [timerDurations, setTimerDurations] = useState<{ pomodoro: number; shortBreak: number; longBreak: number }>({
@@ -54,6 +96,9 @@ export default function Home() {
 
   // Tasks state
   const [tasks, setTasks] = useState<Task[]>([])
+
+  // Find the scene by ID
+  const currentScene = scenes.find(scene => scene.id === currentSceneId) ?? scenes[0]
 
   // Load tasks and timer durations from localStorage on initial render
   useEffect(() => {
@@ -67,10 +112,10 @@ export default function Home() {
       setTimerDurations(JSON.parse(storedDurations));
     }
 
-    // Load the current scene index from localStorage
-    const storedSceneIndex = localStorage.getItem('currentSceneIndex')
-    if (storedSceneIndex) {
-      setCurrentSceneIndex(Number(storedSceneIndex))
+    // Load the current scene ID from localStorage
+    const storedSceneId = localStorage.getItem('currentSceneId')
+    if (storedSceneId && scenes.some(scene => scene.id === storedSceneId)) {
+      setCurrentSceneId(storedSceneId)
     }
     setIsInitialLoad(false)
   }, [])
@@ -220,18 +265,17 @@ export default function Home() {
     setShowTimerComplete(false)
   }
 
-  // Function to cycle through environments
-  const handleChangeEnvironment = () => {
-    const nextIndex = (currentSceneIndex + 1) % scenes.length;
-    setCurrentSceneIndex(nextIndex);
-    localStorage.setItem('currentSceneIndex', nextIndex.toString()); // Store the current scene index
+  const handleSelectScene = (scene: Scene) => {
+    setCurrentSceneId(scene.id);
+    localStorage.setItem('currentSceneId', scene.id);
+    setIsEnvironmentModalOpen(false);
   }
 
   return (
     <div className="fixed inset-0 overflow-hidden">
       {/* Background Scene */}
       <div className="absolute inset-0">
-        <Environment currentScene={scenes[currentSceneIndex]} />
+        <Environment currentScene={currentScene} />
       </div>
 
       {/* UI Layer */}
@@ -239,10 +283,28 @@ export default function Home() {
         {/* Change Environment Button */}
         <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-10">
           <button
-            onClick={handleChangeEnvironment}
-            className="flex items-center px-4 py-2 rounded-lg bg-white/20 text-white hover:bg-white/30 transition"
+            onClick={() => setIsEnvironmentModalOpen(true)}
+            className="flex items-center p-2.5 rounded-xl 
+              bg-black/20 backdrop-blur-md 
+              border border-white/20 
+              shadow-[0_0_15px_rgba(0,0,0,0.5)] 
+              hover:bg-white/20 
+              transition-all duration-300 
+              group
+              before:absolute before:inset-0 before:rounded-xl before:bg-gradient-to-r before:from-black/20 before:to-transparent before:-z-10"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink" fill="#FFFFFFFF" height="30px" width="30px" version="1.1" id="Layer_1" viewBox="0 0 485 485" xmlSpace="preserve">
+            <svg 
+              xmlns="http://www.w3.org/2000/svg" 
+              xmlnsXlink="http://www.w3.org/1999/xlink" 
+              fill="currentColor" 
+              height="24px" 
+              width="24px" 
+              version="1.1" 
+              id="Layer_1" 
+              viewBox="0 0 485 485" 
+              xmlSpace="preserve"
+              className="text-white group-hover:text-white relative z-10 drop-shadow-[0_2px_3px_rgba(0,0,0,0.5)]"
+            >
               <g>
                 <polygon points="30,30 106,30 106,0 0,0 0,106 30,106  "/>
                 <polygon points="379,0 379,30 455,30 455,106 485,106 485,0  "/>
@@ -254,6 +316,15 @@ export default function Home() {
             </svg>
           </button>
         </div>
+        
+
+        {/* Environment Modal */}
+        <EnvironmentModal 
+          isOpen={isEnvironmentModalOpen}
+          onClose={() => setIsEnvironmentModalOpen(false)}
+          scenes={scenes}
+          onSelectScene={handleSelectScene}
+        />
 
         {/* Side Controls */}
         <div className="pointer-events-auto">

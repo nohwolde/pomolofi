@@ -28,6 +28,24 @@ export default function SideControls({
   showTime,
   onToggleShowTime
 }: SideControlsProps) {
+  const buttonBaseClasses = `
+    w-14 h-14 rounded-full 
+    flex items-center justify-center 
+    backdrop-blur-sm border border-white/10
+    shadow-[0_0_10px_rgba(0,0,0,0.3)]
+    transition-all duration-300
+    relative
+    before:absolute before:inset-0 
+    before:rounded-full 
+    before:bg-gradient-to-r 
+    before:from-black/10 
+    before:to-transparent 
+    before:-z-10
+  `
+
+  const activeButtonClasses = `${buttonBaseClasses} bg-black/20 text-white hover:bg-white/20`
+  const inactiveButtonClasses = `${buttonBaseClasses} bg-black/10 text-white hover:bg-white/20`
+
   return (
     <div className="fixed right-8 top-1/2 -translate-y-1/2 flex flex-col items-center gap-8">
       <div className="flex flex-col items-center gap-3">
@@ -45,10 +63,10 @@ export default function SideControls({
           <div className="flex flex-col gap-2">
             <button
               onClick={onTimerToggle}
-              className="w-14 h-14 rounded-full glass-effect flex items-center justify-center text-white hover:text-white hover:bg-white/15 transition-all shadow-2xl bg-white/20"
+              className={activeButtonClasses}
               title={isTimerPaused ? "Resume Timer" : "Pause Timer"}
             >
-              <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-7 h-7 relative z-10 drop-shadow-[0_2px_3px_rgba(0,0,0,0.5)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 {isTimerPaused ? (
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
                 ) : (
@@ -58,10 +76,10 @@ export default function SideControls({
             </button>
             <button
               onClick={onTimerStop}
-              className="w-14 h-14 rounded-full glass-effect flex items-center justify-center text-white/70 hover:text-white hover:bg-white/15 transition-all shadow-2xl bg-white/10"
+              className={inactiveButtonClasses}
               title="Stop Timer"
             >
-              <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-7 h-7 relative z-10 drop-shadow-[0_2px_3px_rgba(0,0,0,0.5)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 10a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1v-4z" />
               </svg>
@@ -70,10 +88,10 @@ export default function SideControls({
         ) : (
           <button
             onClick={onTimerClick}
-            className="w-14 h-14 rounded-full glass-effect flex items-center justify-center text-white hover:text-white hover:bg-white/15 transition-all shadow-2xl bg-white/10"
+            className={inactiveButtonClasses}
             title="Start Timer"
           >
-            <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-7 h-7 relative z-10 drop-shadow-[0_2px_3px_rgba(0,0,0,0.5)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
           </button>
@@ -82,20 +100,20 @@ export default function SideControls({
 
       <button
         onClick={onTaskClick}
-        className="w-14 h-14 rounded-full glass-effect flex items-center justify-center text-white hover:text-white hover:bg-white/15 transition-all shadow-2xl bg-white/10"
+        className={inactiveButtonClasses}
         title="Add Task"
       >
-        <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg className="w-7 h-7 relative z-10 drop-shadow-[0_2px_3px_rgba(0,0,0,0.5)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 4v16m8-8H4" />
         </svg>
       </button>
 
       <button
         onClick={onTasksExpandClick}
-        className="w-14 h-14 rounded-full glass-effect flex items-center justify-center text-white hover:text-white hover:bg-white/15 transition-all shadow-2xl bg-white/10"
+        className={inactiveButtonClasses}
         title="Show Tasks"
       >
-        <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg className="w-7 h-7 relative z-10 drop-shadow-[0_2px_3px_rgba(0,0,0,0.5)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
         </svg>
       </button>

@@ -26,7 +26,7 @@ export default function YouTubePlayer({ videoId, isPlaying, volume }: YouTubePla
         width: '0',  // Hide the player
         videoId: videoId,
         playerVars: {
-        //   autoplay: 1,
+          //   autoplay: 1,
           controls: 0, // Hide default controls
           loop: 1,
           playlist: videoId // Loop the same video
