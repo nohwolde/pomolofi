@@ -13,6 +13,7 @@ import cafeImg from '@/scenes/cozy-cafe.jpg'
 import { motion } from 'framer-motion'
 import EnvironmentModal from '@/components/EnvironmentModal'
 import { StaticImageData } from 'next/image'
+import SoundPlayer from '@/components/SoundPlayer'
 
 type TimerMode = 'pomodoro' | 'shortBreak' | 'longBreak'
 
@@ -369,6 +370,7 @@ export default function Home() {
 
         {/* Music Player */}
         <MusicPlayer />
+        <SoundPlayer />
 
         {/* Add Task Modal */}
         {showAddTask && (

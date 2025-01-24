@@ -131,7 +131,7 @@ export default function TaskList({
       )}
 
       {/* Next Up Section */}
-      <div className="backdrop-blur-lg rounded-xl p-6 w-[300px] shadow-2xl bg-gray-400/30 max-h-60 overflow-y-auto">
+      <div className="backdrop-blur-lg rounded-xl p-6 w-[300px] shadow-2xl bg-gray-400/30">
         <div className="flex justify-between items-center mb-4">
           <button 
             onClick={onToggleExpand}
@@ -140,16 +140,18 @@ export default function TaskList({
             <div className="text-sm text-white/70 uppercase tracking-wider font-medium group-hover:text-white/90">
               Next Up {nextUpTasks.length > 0 && `(${nextUpTasks.length})`}
             </div>
-            <svg 
-              className={`w-4 h-4 text-white/50 transition-transform group-hover:text-white/70 ${
-                expanded ? 'rotate-180' : ''
-              }`} 
-              fill="none" 
-              stroke="currentColor" 
-              viewBox="0 0 24 24"
-            >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-            </svg>
+            {nextUpTasks.length > 1 && (
+              <svg 
+                className={`w-4 h-4 text-white/50 transition-transform group-hover:text-white/70 ${
+                  expanded ? 'rotate-180' : ''
+                }`} 
+                fill="none" 
+                stroke="currentColor" 
+                viewBox="0 0 24 24"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              </svg>
+            )}
           </button>
           <button
             onClick={onAddTask}
@@ -159,15 +161,29 @@ export default function TaskList({
           </button>
         </div>
         
+        {/* Always show first next task */}
+        {nextUpTasks.length > 0 && (
+          <div className="flex items-center gap-3 text-white/70 hover:text-white transition-colors p-2 hover:bg-white/5 rounded-lg group mb-2">
+            <span className="flex-1">{nextUpTasks[0].title}</span>
+            <button
+              onClick={() => handleCompleteTask(nextUpTasks[0].id)}
+              className="opacity-0 group-hover:opacity-100 text-white/30 hover:text-white/70 transition-all"
+            >
+              ✓
+            </button>
+          </div>
+        )}
+        
+        {/* Remaining tasks when expanded */}
         <AnimatePresence>
-          {expanded && (
+          {expanded && nextUpTasks.length > 1 && (
             <motion.div
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: 'auto' }}
               exit={{ opacity: 0, height: 0 }}
-              className="space-y-3 overflow-hidden"
+              className="space-y-3 overflow-hidden border-t border-white/10 pt-3 mt-1"
             >
-              {nextUpTasks.map(task => (
+              {nextUpTasks.slice(1).map(task => (
                 <motion.div 
                   key={task.id}
                   initial={{ opacity: 0, y: -10 }}
@@ -184,23 +200,19 @@ export default function TaskList({
                   </button>
                 </motion.div>
               ))}
-              {nextUpTasks.length === 0 && (
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  className="text-white/80 text-center py-2"
-                >
-                  No tasks yet
-                </motion.div>
-              )}
             </motion.div>
           )}
         </AnimatePresence>
         
-        {!expanded && nextUpTasks.length > 0 && (
-          <div className="text-white/30 text-center">
-            {nextUpTasks.length} task{nextUpTasks.length !== 1 ? 's' : ''} remaining
+        {!expanded && nextUpTasks.length > 1 && (
+          <div className="text-white/30 text-center text-sm mt-2 border-t border-white/10 pt-2">
+            +{nextUpTasks.length - 1} more task{nextUpTasks.length !== 2 ? 's' : ''}
+          </div>
+        )}
+
+        {nextUpTasks.length === 0 && (
+          <div className="text-white/50 text-center py-2">
+            No tasks yet
           </div>
         )}
       </div>
