@@ -171,23 +171,25 @@ export default function MusicPlayer() {
           </div>
 
           {/* Volume Control */}
-          <div className="flex items-center gap-2"
-               onMouseEnter={() => setIsVolumeVisible(true)}
-               onMouseLeave={() => setIsVolumeVisible(false)}>
+          <div className="flex items-center gap-2 pr-2"
+            onMouseEnter={() => setIsVolumeVisible(true)}
+            onMouseLeave={() => setIsVolumeVisible(false)}
+          >
             <button
               onClick={toggleMute}
-              className="p-2 text-white/70 hover:text-white transition-colors"
+              className="pb-1 text-white/70 hover:text-white transition-colors"
             >
-              {isMuted || volume === 0 ? <FaVolumeMute size={16} /> : <FaVolumeUp size={16} />}
+              {isMuted || volume === 0 ? <FaVolumeMute size={8} /> : <FaVolumeUp size={16} />}
             </button>
-            <div className={`flex-1 transition-opacity duration-200 ${isVolumeVisible ? 'opacity-100' : 'opacity-0'}`}>
+            <div className={`flex-1 transition-all duration-200 ${isVolumeVisible ? 'opacity-100' : 'opacity-40'}`}>
               <input
                 type="range"
                 min="0"
                 max="100"
                 value={volume}
                 onChange={handleVolumeChange}
-                className="w-full accent-white/70 hover:accent-white cursor-pointer"
+                className={`w-full accent-white/30 hover:accent-white/70 cursor-pointer transition-colors
+                  group-hover:accent-white/70 ${!isVolumeVisible ? '[&::-webkit-slider-thumb]:opacity-0' : ''}`}
               />
             </div>
           </div>

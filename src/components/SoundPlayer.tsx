@@ -247,10 +247,10 @@ export default function SoundPlayer() {
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.15 }}
-                className="h-[52px] p-3"
+                className="h-[52px] flex items-center px-3"
               >
                 {currentSound ? (
-                  <div className="flex items-center justify-between gap-2">
+                  <div className="flex items-center justify-between gap-2 w-full">
                     <button
                       onClick={() => setIsExpanded(true)}
                       className="flex items-center gap-2 px-2 py-1 rounded-lg hover:bg-white/10 text-white/70 hover:text-white transition-all"
