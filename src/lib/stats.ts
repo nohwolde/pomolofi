@@ -114,7 +114,7 @@ export async function getUserStats(userId: string): Promise<UserStatsData> {
     const statsQuery = query(
       collection(db, "users", userId, "dailyStats"),
       where("date", ">=", last28Days.toISOString().split("T")[0]),
-      orderBy("date", "desc")
+      orderBy("date", "asc")
     );
 
     const querySnapshot = await getDocs(statsQuery);
@@ -122,6 +122,11 @@ export async function getUserStats(userId: string): Promise<UserStatsData> {
     querySnapshot.forEach((doc) => {
       dailyStats.push(doc.data() as DailyStats);
     });
+
+    // Sort array to ensure correct order
+    dailyStats.sort(
+      (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
+    );
 
     return {
       recentDays: dailyStats,
