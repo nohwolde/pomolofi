@@ -451,23 +451,24 @@ const FocusStats = memo(function FocusStats({
             className="bg-black/40 backdrop-blur-md rounded-3xl p-12 w-[600px] text-center relative
               border border-white/10 shadow-[0_0_50px_rgba(0,0,0,0.3)]"
           >
-            <h2 className="text-4xl font-light text-white mb-4">
-              Upgrade to Premium
-            </h2>
-            <p className="text-xl text-white/60 mb-12">
-              Upgrade to access more features and insights.
+            {/* <h2 className="text-4xl font-light text-white mb-4">
+              Login or Signup
+            </h2> */}
+            <p className="text-xl text-white/80 mb-12">
+              Login or Signup to access more features and insights.
             </p>
 
             <button
               onClick={() => {
                 setShowPremiumModal(false)
+                setIsModalOpen(false)
                 setShowAuthModal(true)
               }}
               className="px-8 py-4 bg-purple-500 hover:bg-purple-600 transition-colors rounded-xl text-white
                 text-lg shadow-lg shadow-purple-500/20 flex items-center gap-2 mx-auto"
             >
               <FaBolt className="text-xl" />
-              Upgrade Now
+               Login or Signup
             </button>
 
             <button
