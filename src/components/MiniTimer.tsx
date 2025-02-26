@@ -17,10 +17,20 @@ export default function MiniTimer({ timeLeft, isActive, showTime, onToggleShowTi
   }
 
   return (
-    <div className="relative flex flex-col items-center">
+    <div className="relative flex gap-2 items-center">
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: 10 }}
+        className="rounded-2xl px-4 py-2 
+              bg-black/20 backdrop-blur-md w
+              border border-white/20 
+              shadow-[0_0_15px_rgba(0,0,0,0.5)] 
+              text-center w-[100px]"
+      >
       <button
         onClick={onToggleShowTime}
-        className="absolute -top-6 left-1/2 -translate-x-1/2 text-white/50 hover:text-white/70 transition-colors"
+        className="text-white/50 hover:text-white/70 transition-colors"
         title={showTime ? "Hide Timer" : "Show Timer"}
       >
         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -31,12 +41,6 @@ export default function MiniTimer({ timeLeft, isActive, showTime, onToggleShowTi
           )}
         </svg>
       </button>
-      <motion.div
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: 10 }}
-        className="glass-effect rounded-2xl px-4 py-2 shadow-2xl bg-white/10 text-center w-[100px]"
-      >
         <div className="text-2xl font-light text-white tabular-nums flex justify-center items-center h-[36px]">
           {showTime ? formatTime(timeLeft) : (
             <span className="tracking-[0.5em] pl-[0.5em]">···</span>

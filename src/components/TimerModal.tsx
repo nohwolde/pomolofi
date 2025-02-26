@@ -23,9 +23,10 @@ type TimerModalProps = {
   onClose: () => void
   onStart: (mode: TimerMode, duration: number) => void
   currentMode: TimerMode
+  onDurationsChange: (durations: { pomodoro: number; shortBreak: number; longBreak: number }) => void
 }
 
-export default function TimerModal({ onClose, onStart, currentMode }: TimerModalProps) {
+export default function TimerModal({ onClose, onStart, currentMode, onDurationsChange }: TimerModalProps) {
   const [mode, setMode] = useState<TimerMode>(currentMode)
   const [customDurations, setCustomDurations] = useState(getSavedDurations())
   const [duration, setDuration] = useState(customDurations[currentMode])
@@ -34,6 +35,11 @@ export default function TimerModal({ onClose, onStart, currentMode }: TimerModal
   useEffect(() => {
     localStorage.setItem('timerDurations', JSON.stringify(customDurations))
   }, [customDurations])
+
+  // Update parent when durations change
+  useEffect(() => {
+    onDurationsChange(customDurations)
+  }, [customDurations, onDurationsChange])
 
   const handleModeChange = (newMode: TimerMode) => {
     setMode(newMode)

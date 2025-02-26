@@ -18,7 +18,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <Script async src="https://cloud.umami.is/script.js" data-website-id="e2e5fb42-7329-49ae-a205-f217743f69c3" />
-      <body className={inter.className}>{children}</body>
+      <body className={inter.className}>
+        {children}
+      </body>
     </html>
   )
 }

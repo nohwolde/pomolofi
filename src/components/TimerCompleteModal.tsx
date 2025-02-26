@@ -19,8 +19,9 @@ export default function TimerCompleteModal({
   onStartNext,
   onStop,
   isOpen,
-  onClose
-}: TimerCompleteModalProps) {
+  onClose,
+  alarmAudio
+}: TimerCompleteModalProps & { alarmAudio: HTMLAudioElement | null }) {
   if (!isOpen) return null;
 
   const getNextMode = (): TimerMode => {
@@ -47,12 +48,37 @@ export default function TimerCompleteModal({
     }
   }
 
+  const handleStartNext = (mode: TimerMode) => {
+    if (alarmAudio) {
+      alarmAudio.pause()
+      alarmAudio.currentTime = 0
+    }
+    onStartNext(mode)
+  }
+
+  const handleStop = () => {
+    if (alarmAudio) {
+      alarmAudio.pause()
+      alarmAudio.currentTime = 0
+    }
+    onStop()
+  }
+
+  const handleClose = () => {
+    if (alarmAudio) {
+      alarmAudio.pause()
+      alarmAudio.currentTime = 0
+    }
+    onClose()
+  }
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 pointer-events-auto"
+      onClick={(e) => e.target === e.currentTarget && handleClose()}
     >
       <motion.div
         initial={{ scale: 0.9, opacity: 0 }}
@@ -76,13 +102,13 @@ export default function TimerCompleteModal({
 
         <div className="flex gap-3">
           <button
-            onClick={() => onStartNext(nextMode)}
+            onClick={() => handleStartNext(nextMode)}
             className="flex-1 px-6 py-3 rounded-xl bg-green-500 text-white hover:bg-green-600 transition-colors"
           >
             {getNextButtonText()}
           </button>
           <button
-            onClick={onStop}
+            onClick={handleStop}
             className="flex-1 px-6 py-3 rounded-xl bg-red-500 text-white hover:bg-red-600 transition-colors"
           >
             End Session

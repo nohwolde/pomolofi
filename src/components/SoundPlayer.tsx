@@ -2,8 +2,9 @@
 
 import { useState, useRef, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { FaPlay, FaPause, FaChevronLeft, FaChevronRight, FaVolumeUp } from 'react-icons/fa'
+import { FaPlay, FaPause, FaChevronLeft, FaChevronRight, FaVolumeUp, FaFire } from 'react-icons/fa'
 import { WiRaindrops, WiRain } from 'react-icons/wi'
+import { GiWaveStrike } from 'react-icons/gi'
 
 type Sound = {
   id: string
@@ -27,6 +28,20 @@ const sounds: Sound[] = [
     file: '/sounds/heavy-rain.mp3',
     icon: <WiRain size={24} />,
     description: 'Strong rainfall with subtle thunder'
+  },
+  {
+    id: 'burning-fire',
+    name: 'Burning Fire',
+    file: '/sounds/burning-fire.mp3',
+    icon: <FaFire size={20} />,
+    description: 'Crackling fireplace ambience'
+  },
+  {
+    id: 'ocean-waves',
+    name: 'Ocean Waves',
+    file: '/sounds/ocean-waves.mp3',
+    icon: <GiWaveStrike size={22} />,
+    description: 'Calming waves on a peaceful beach'
   }
 ]
 
