@@ -1,6 +1,6 @@
 import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
-import { getAuth } from "firebase/auth";
+import { getAuth, browserLocalPersistence } from "firebase/auth";
 import { GoogleAuthProvider } from "firebase/auth";
 
 // Your Firebase configuration object
@@ -14,9 +14,10 @@ const firebaseConfig = {
 };
 
 // Initialize Firebase
-const app = initializeApp(firebaseConfig);
+export const app = initializeApp(firebaseConfig);
 
 // Initialize services
 export const db = getFirestore(app);
 export const auth = getAuth(app);
+auth.setPersistence(browserLocalPersistence);
 export const googleProvider = new GoogleAuthProvider();
