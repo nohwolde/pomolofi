@@ -118,15 +118,36 @@ export async function getUserStats(userId: string): Promise<UserStatsData> {
     );
 
     const querySnapshot = await getDocs(statsQuery);
-    const dailyStats: DailyStats[] = [];
-    querySnapshot.forEach((doc) => {
-      dailyStats.push(doc.data() as DailyStats);
+    const statsMap: { [date: string]: DailyStats } = {};
+
+    // Create array of all dates in range
+    const allDates = Array.from({ length: 29 }, (_, i) => {
+      const date = new Date(today);
+      date.setDate(date.getDate() - (28 - i));
+      return date.toISOString().split("T")[0];
     });
 
-    // Sort array to ensure correct order
-    dailyStats.sort(
-      (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
-    );
+    // Initialize all dates with zero values
+    allDates.forEach((date) => {
+      statsMap[date] = {
+        date,
+        focusTime: 0,
+        breakTime: 0,
+        pomodorosCompleted: 0,
+        tasksCompleted: 0,
+      };
+    });
+
+    // Fill in actual data where it exists
+    querySnapshot.forEach((doc) => {
+      const data = doc.data() as DailyStats;
+      if (data.date in statsMap) {
+        statsMap[data.date] = data;
+      }
+    });
+
+    // Convert map back to array in chronological order
+    const dailyStats = allDates.map((date) => statsMap[date]);
 
     return {
       recentDays: dailyStats,
