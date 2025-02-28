@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from 'react'
 import YouTubePlayer from './YouTubePlayer'
 import { FaPlay, FaPause, FaBackward, FaForward, FaVolumeMute, FaVolumeUp } from 'react-icons/fa'
 import { motion } from 'framer-motion'
+import VolumeSlider from './VolumeSlider'
 
 const streams = [
     {
@@ -54,6 +55,7 @@ export default function MusicPlayer() {
   const [isVolumeVisible, setIsVolumeVisible] = useState(false)
   const [isMuted, setIsMuted] = useState(false)
   const previousVolume = useRef(volume)
+  const customInputRef = useRef<HTMLDivElement>(null);
 
   const currentStream = streams[currentStreamIndex]
 
@@ -86,6 +88,24 @@ export default function MusicPlayer() {
       isCustomMode ? '360px' : '300px'
     );
   }, [isCustomMode]);
+
+  // Add click outside handler
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (customInputRef.current && 
+          !customInputRef.current.contains(event.target as Node) && 
+          showCustomInput) {
+        setShowCustomInput(false);
+      }
+    }
+    
+    // Add event listener
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      // Clean up
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showCustomInput]);
 
   const handleStreamChange = (index: number) => {
     setCurrentStreamIndex(index)
@@ -164,6 +184,7 @@ export default function MusicPlayer() {
         {/* Custom Video Input */}
         {showCustomInput && (
           <motion.div
+            ref={customInputRef}
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
@@ -173,12 +194,15 @@ export default function MusicPlayer() {
               type="text"
               placeholder="Paste YouTube URL"
               className="w-full bg-white/10 rounded-lg px-3 py-2 text-white/90 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
+              value={customVideoId}
+              onChange={(e) => setCustomVideoId(e.target.value)}
               onKeyDown={(e) => {
                 if (e.key === 'Enter') {
-                  handleCustomVideo(e.currentTarget.value)
-                  setShowCustomInput(false)
+                  handleCustomVideo(customVideoId);
+                  setShowCustomInput(false);
                 }
               }}
+              autoFocus
             />
             {customVideoError && (
               <p className="text-red-400 text-xs mt-2">Invalid YouTube URL</p>
@@ -246,28 +270,7 @@ export default function MusicPlayer() {
               onError={() => setCustomVideoError(true)}
             />
             {/* Volume Control Only */}
-            <div className="flex items-center gap-2 pr-2"
-              onMouseEnter={() => setIsVolumeVisible(true)}
-              onMouseLeave={() => setIsVolumeVisible(false)}
-            >
-              <button
-                onClick={toggleMute}
-                className="pb-1 text-white/70 hover:text-white transition-colors"
-              >
-                {isMuted || volume === 0 ? <FaVolumeMute size={16} /> : <FaVolumeUp size={16} />}
-              </button>
-              <div className={`flex-1 transition-all duration-200 ${isVolumeVisible ? 'opacity-100' : 'opacity-40'}`}>
-                <input
-                  type="range"
-                  min="0"
-                  max="100"
-                  value={volume}
-                  onChange={handleVolumeChange}
-                  className={`w-full accent-white/30 hover:accent-white/70 cursor-pointer transition-colors
-                    group-hover:accent-white/70 ${!isVolumeVisible ? '[&::-webkit-slider-thumb]:opacity-0' : ''}`}
-                />
-              </div>
-            </div>
+            <VolumeSlider initialVolume={volume} onVolumeChange={handleVolumeChange}/>
           </div>
         ) : (
           <>
@@ -330,28 +333,7 @@ export default function MusicPlayer() {
             </div>
 
             {/* Volume Control */}
-            <div className="flex items-center gap-2 pr-2"
-              onMouseEnter={() => setIsVolumeVisible(true)}
-              onMouseLeave={() => setIsVolumeVisible(false)}
-            >
-              <button
-                onClick={toggleMute}
-                className="pb-1 text-white/70 hover:text-white transition-colors"
-              >
-                {isMuted || volume === 0 ? <FaVolumeMute size={8} /> : <FaVolumeUp size={16} />}
-              </button>
-              <div className={`flex-1 transition-all duration-200 ${isVolumeVisible ? 'opacity-100' : 'opacity-40'}`}>
-                <input
-                  type="range"
-                  min="0"
-                  max="100"
-                  value={volume}
-                  onChange={handleVolumeChange}
-                  className={`w-full accent-white/30 hover:accent-white/70 cursor-pointer transition-colors
-                    group-hover:accent-white/70 ${!isVolumeVisible ? '[&::-webkit-slider-thumb]:opacity-0' : ''}`}
-                />
-              </div>
-            </div>
+            <VolumeSlider initialVolume={volume} onVolumeChange={handleVolumeChange}/>
           </div>
         )}
       </div>

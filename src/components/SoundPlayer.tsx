@@ -1,3 +1,9 @@
+declare global {
+  interface Window {
+    webkitAudioContext: typeof AudioContext;
+  }
+}
+
 'use client'
 
 import { useState, useRef, useEffect } from 'react'
@@ -59,6 +65,9 @@ export default function SoundPlayer() {
   const gainNodeRef = useRef<GainNode | null>(null)
   const audioBufferRef = useRef<AudioBuffer | null>(null)
 
+  // Add audio buffer caching
+  const audioBufferCache = useRef<{ [key: string]: AudioBuffer }>({})
+
   const currentSound = sounds.find(sound => sound.id === currentSoundId)
 
   // Initialize Audio Context
@@ -108,31 +117,65 @@ export default function SoundPlayer() {
     source.start(0)
   }
 
-  // Handle sound selection
+  // Pre-load audio files
+  useEffect(() => {
+    const preloadAudio = async () => {
+      for (const sound of sounds) {
+        try {
+          if (!audioBufferCache.current[sound.id]) {
+            const buffer = await loadAudio(sound.file)
+            if (buffer) {
+              audioBufferCache.current[sound.id] = buffer
+            }
+          }
+        } catch (error) {
+          console.error(`Error preloading ${sound.id}:`, error)
+        }
+      }
+    }
+
+    preloadAudio()
+  }, [])
+
+  // Optimize sound selection
   const handleSoundSelect = async (soundId: string) => {
     const sound = sounds.find(s => s.id === soundId)
     if (!sound) return
 
+    // Stop current playback
+    if (sourceNodeRef.current) {
+      sourceNodeRef.current.stop()
+      sourceNodeRef.current.disconnect()
+    }
+
     if (currentSoundId === soundId) {
+      // Toggle play/pause for the same sound
       setIsPlaying(!isPlaying)
       if (isPlaying) {
+        // We're stopping playback
         sourceNodeRef.current?.stop()
-      } else if (audioBufferRef.current) {
-        playAudio(audioBufferRef.current)
+      } else if (audioBufferCache.current[soundId]) {
+        // We're resuming playback
+        playAudio(audioBufferCache.current[soundId])
       }
     } else {
-      // Stop current playback
-      if (sourceNodeRef.current) {
-        sourceNodeRef.current.stop()
-        sourceNodeRef.current.disconnect()
-      }
-
+      // New sound selected
       setCurrentSoundId(soundId)
       setIsPlaying(true)
 
-      // Load and play new audio
-      const buffer = await loadAudio(sound.file)
+      // Use cached buffer or load new one
+      let buffer = audioBufferCache.current[soundId]
+      if (!buffer) {
+        const newBuffer = await loadAudio(sound.file)
+        if (newBuffer) {
+          audioBufferCache.current[soundId] = newBuffer
+          buffer = newBuffer
+        }
+      }
+      
       if (buffer) {
+        // Ensure we're using the correct buffer for this sound
+        audioBufferRef.current = buffer
         playAudio(buffer)
       }
     }
