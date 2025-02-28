@@ -1,17 +1,17 @@
 'use client'
 
-import { useState, useEffect, useRef, useMemo } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { AnimatePresence, motion } from 'framer-motion'
 import Image from 'next/image'
+import { useState, useEffect } from 'react'
 
-interface Scene {
+type Scene = {
   id: string
   name: string
-  background: string | any // StaticImageData
-  type: 'video' | 'image'
+  background: any
+  type: 'image' | 'video'
 }
 
-interface EnvironmentModalProps {
+type EnvironmentModalProps = {
   isOpen: boolean
   onClose: () => void
   scenes: Scene[]
@@ -19,63 +19,8 @@ interface EnvironmentModalProps {
 }
 
 export default function EnvironmentModal({ isOpen, onClose, scenes, onSelectScene }: EnvironmentModalProps) {
-  const [visibleScenes, setVisibleScenes] = useState<Set<string>>(new Set())
-  const observers = useRef<Map<string, IntersectionObserver>>(new Map())
-  const observersSetup = useRef(false)
-  
-  // Memoize videos and images filtering since scenes never change
-  const videos = useMemo(() => scenes.filter(scene => scene.type === 'video'), [scenes])
-  const images = useMemo(() => scenes.filter(scene => scene.type === 'image'), [scenes])
-
-  // Setup intersection observer only once
-  useEffect(() => {
-    if (observersSetup.current) return
-    
-    const options = {
-      root: null,
-      rootMargin: '100px',
-      threshold: 0.1
-    }
-
-    scenes.forEach(scene => {
-      const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-          if (entry.isIntersecting) {
-            setVisibleScenes(prev => new Set(Array.from(prev).concat(scene.id)))
-            observer.disconnect()
-          }
-        })
-      }, options)
-      
-      observers.current.set(scene.id, observer)
-    })
-    
-    observersSetup.current = true
-    
-    return () => {
-      observers.current.forEach(observer => observer.disconnect())
-    }
-  }, [scenes])
-
-  // Start observing elements when they're rendered
-  useEffect(() => {
-    if (!isOpen) return
-    
-    // Only observe scenes that are not already visible
-    scenes.forEach(scene => {
-      if (visibleScenes.has(scene.id)) return
-      
-      const observer = observers.current.get(scene.id)
-      if (!observer) return
-      
-      const element = document.getElementById(`scene-${scene.id}`)
-      if (element) observer.observe(element)
-    })
-    
-    return () => {
-      // Don't disconnect observers on unmount - keep track of what's been seen
-    }
-  }, [isOpen, scenes, visibleScenes])
+  const images = scenes.filter(scene => scene.type === 'image');
+  const videos = scenes.filter(scene => scene.type === 'video');
 
   return (
     <AnimatePresence mode="wait">
@@ -132,30 +77,20 @@ export default function EnvironmentModal({ isOpen, onClose, scenes, onSelectScen
                 <div className="grid grid-cols-3 gap-4">
                   {videos.map(scene => (
                     <motion.button
-                      id={`scene-${scene.id}`}
                       key={scene.id}
                       onClick={() => onSelectScene(scene)}
                       className="group relative aspect-video rounded-lg overflow-hidden hover:ring-2 hover:ring-white/50 transition-all"
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
                     >
-                      {visibleScenes.has(scene.id) ? (
-                        <video
-                          src={`${scene.background}#t=0.5`}
-                          muted
-                          playsInline
-                          className="absolute inset-0 w-full h-full object-cover"
-                          onMouseEnter={(e) => e.currentTarget.play()}
-                          onMouseLeave={(e) => {
-                            e.currentTarget.pause();
-                            e.currentTarget.currentTime = 0;
-                          }}
-                        />
-                      ) : (
-                        <div className="absolute inset-0 w-full h-full bg-gray-800/70 animate-pulse flex items-center justify-center">
-                          <span className="text-white/50">Loading...</span>
-                        </div>
-                      )}
+                      <video
+                        src={scene.background}
+                        autoPlay
+                        loop
+                        muted
+                        playsInline
+                        className="absolute inset-0 w-full h-full object-cover"
+                      />
                       <div className="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-colors" />
                       <span className="absolute bottom-2 left-2 text-sm text-white font-medium">
                         {scene.name}
@@ -175,25 +110,18 @@ export default function EnvironmentModal({ isOpen, onClose, scenes, onSelectScen
                 <div className="grid grid-cols-3 gap-4">
                   {images.map(scene => (
                     <motion.button
-                      id={`scene-${scene.id}`}
                       key={scene.id}
                       onClick={() => onSelectScene(scene)}
                       className="group relative aspect-video rounded-lg overflow-hidden hover:ring-2 hover:ring-white/50 transition-all"
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
                     >
-                      {visibleScenes.has(scene.id) ? (
-                        <Image
-                          src={scene.background}
-                          alt={scene.name}
-                          fill
-                          className="object-cover"
-                        />
-                      ) : (
-                        <div className="absolute inset-0 w-full h-full bg-gray-800/70 animate-pulse flex items-center justify-center">
-                          <span className="text-white/50">Loading...</span>
-                        </div>
-                      )}
+                      <Image
+                        src={scene.background}
+                        alt={scene.name}
+                        fill
+                        className="object-cover"
+                      />
                       <div className="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-colors" />
                       <span className="absolute bottom-2 left-2 text-sm text-white font-medium">
                         {scene.name}
