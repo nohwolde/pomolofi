@@ -6,7 +6,7 @@
         "headers": [
           {
             "key": "Access-Control-Allow-Origin",
-            "value": "https://www.pomolofi.app"
+            "value": "https://pomolofi.app, https://www.pomolofi.app"
           },
           {
             "key": "Access-Control-Allow-Methods",

@@ -68,10 +68,12 @@ export default function MusicPlayer() {
     }
   }, [])
 
-  // Load initial custom video from localStorage
+  // Load initial custom video and mode from localStorage
   useEffect(() => {
     const storedCustomVideo = localStorage.getItem('customVideoId');
-    if (storedCustomVideo) {
+    const wasInCustomMode = localStorage.getItem('isCustomMode') === 'true';
+    
+    if (storedCustomVideo && wasInCustomMode) {
       setCustomVideoId(storedCustomVideo);
       setIsCustomMode(true);
     }
@@ -199,7 +201,10 @@ export default function MusicPlayer() {
                   Change Video
                 </button>
                 <button
-                  onClick={() => setIsCustomMode(false)}
+                  onClick={() => {
+                    setIsCustomMode(false)
+                    localStorage.setItem('isCustomMode', 'false')
+                  }}
                   className="text-white/70 hover:text-white/90 text-sm transition-colors"
                 >
                   Switch to Radio
@@ -208,8 +213,14 @@ export default function MusicPlayer() {
             ) : (
               <button
                 onClick={() => {
-                  setIsCustomMode(true)
-                  setShowCustomInput(!showCustomInput && !customVideoId)
+                  if (isCustomMode) {
+                    setIsCustomMode(false)
+                    localStorage.setItem('isCustomMode', 'false')
+                  } else {
+                    setIsCustomMode(true)
+                    localStorage.setItem('isCustomMode', 'true')
+                    setShowCustomInput(!showCustomInput && !customVideoId)
+                  }
                 }}
                 className="text-white/70 hover:text-white/90 text-sm transition-colors"
               >
