@@ -207,7 +207,7 @@ export default function SoundPlayer() {
         )}
       </AnimatePresence>
 
-      <div className="fixed bottom-4 left-[340px]">
+      <div className="fixed bottom-4 left-[calc(var(--music-player-width,_300px)_+_40px)]">
         <AnimatePresence mode="wait">
           <motion.div
             initial={{ opacity: 0 }}

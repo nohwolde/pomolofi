@@ -107,7 +107,9 @@ async function updateAggregatedStats(userId: string) {
 
 export async function getUserStats(userId: string): Promise<UserStatsData> {
   try {
+    // Get dates in user's timezone
     const today = new Date();
+    today.setHours(0, 0, 0, 0);
     const last28Days = new Date(today);
     last28Days.setDate(today.getDate() - 28);
 
@@ -120,11 +122,11 @@ export async function getUserStats(userId: string): Promise<UserStatsData> {
     const querySnapshot = await getDocs(statsQuery);
     const statsMap: { [date: string]: DailyStats } = {};
 
-    // Create array of all dates in range
+    // Create array of all dates in range using local timezone
     const allDates = Array.from({ length: 29 }, (_, i) => {
       const date = new Date(today);
       date.setDate(date.getDate() - (28 - i));
-      return date.toISOString().split("T")[0];
+      return date.toLocaleDateString("en-CA"); // Returns YYYY-MM-DD in local timezone
     });
 
     // Initialize all dates with zero values

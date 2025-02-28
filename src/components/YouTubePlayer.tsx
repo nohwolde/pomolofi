@@ -2,13 +2,28 @@
 
 import { useEffect, useRef, useState } from 'react'
 
-type YouTubePlayerProps = {
+declare global {
+  interface Window {
+    YT: any;
+    onYouTubeIframeAPIReady: () => void;
+  }
+}
+
+interface YouTubePlayerProps {
   videoId: string
   isPlaying: boolean
   volume: number
+  isVisible?: boolean
+  onError?: () => void
 }
 
-export default function YouTubePlayer({ videoId, isPlaying, volume }: YouTubePlayerProps) {
+export default function YouTubePlayer({ 
+  videoId, 
+  isPlaying, 
+  volume, 
+  isVisible = false,
+  onError
+}: YouTubePlayerProps) {
   const playerRef = useRef<HTMLDivElement | null>(null)
   const [player, setPlayer] = useState<any>(null)
 
@@ -22,20 +37,22 @@ export default function YouTubePlayer({ videoId, isPlaying, volume }: YouTubePla
     // Create the YouTube player
     const onYouTubeIframeAPIReady = () => {
       const newPlayer = new window.YT.Player(playerRef.current, {
-        height: '0', // Hide the player
-        width: '0',  // Hide the player
+        height: isVisible ? '180' : '0',
+        width: isVisible ? '320' : '0',
         videoId: videoId,
         playerVars: {
-          //   autoplay: 1,
-          controls: 0, // Hide default controls
+          controls: isVisible ? 1 : 0,
           loop: 1,
-          playlist: videoId // Loop the same video
+          playlist: videoId,
+          modestbranding: 1,
+          rel: 0
         },
         events: {
           onReady: (event: any) => {
             event.target.playVideo()
             setPlayer(newPlayer)
-          }
+          },
+          onError: () => onError?.()
         }
       })
     }
@@ -46,7 +63,7 @@ export default function YouTubePlayer({ videoId, isPlaying, volume }: YouTubePla
     } else {
       window.onYouTubeIframeAPIReady = onYouTubeIframeAPIReady
     }
-  }, [])
+  }, [isVisible])
 
   useEffect(() => {
     if (player) {
@@ -70,5 +87,12 @@ export default function YouTubePlayer({ videoId, isPlaying, volume }: YouTubePla
     }
   }, [volume, player])
 
-  return <div ref={playerRef} style={{ display: 'none' }} /> // Hide the player
+  return (
+    <div 
+      ref={playerRef} 
+      className={`rounded-xl overflow-hidden transition-all duration-300 ${
+        isVisible ? 'mb-4' : 'hidden'
+      }`}
+    />
+  )
 } 

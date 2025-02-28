@@ -595,8 +595,10 @@ export default function Home() {
         )}
 
         {/* Music Player */}
-        <MusicPlayer />
-        <SoundPlayer />
+        <div className="fixed bottom-4 left-8 flex gap-4">
+          <MusicPlayer />
+          <SoundPlayer />
+        </div>
 
         {/* Add Task Modal */}
         {showAddTask && (
