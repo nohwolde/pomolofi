@@ -34,14 +34,19 @@ export default function YouTubePlayer({
     const firstScriptTag = document.getElementsByTagName('script')[0]
     firstScriptTag?.parentNode?.insertBefore(tag, firstScriptTag)
 
+    console.log('isVisible', isVisible);
+    console.log('Video ID', videoId);
+
     // Create the YouTube player
     const onYouTubeIframeAPIReady = () => {
+      if (!playerRef.current) return;
+      
       const newPlayer = new window.YT.Player(playerRef.current, {
-        height: isVisible ? '180' : '0',
-        width: isVisible ? '320' : '0',
+        height: '180',
+        width: '320',
         videoId: videoId,
         playerVars: {
-          controls: isVisible ? 1 : 0,
+          controls: 1,
           loop: 1,
           playlist: videoId,
           modestbranding: 1,
@@ -63,10 +68,12 @@ export default function YouTubePlayer({
     } else {
       window.onYouTubeIframeAPIReady = onYouTubeIframeAPIReady
     }
-  }, [isVisible])
+  }, [])
 
   useEffect(() => {
     if (player) {
+      console.log('isVisible', isVisible);
+      console.log('Video ID', videoId);
       player.loadVideoById(videoId) // Load the new video when the videoId changes
     }
   }, [videoId, player])
@@ -90,9 +97,7 @@ export default function YouTubePlayer({
   return (
     <div 
       ref={playerRef} 
-      className={`rounded-xl overflow-hidden transition-all duration-300 ${
-        isVisible ? 'mb-4' : 'hidden'
-      }`}
+      className={`rounded-xl overflow-hidden transition-all duration-300 mb-4`}
     />
   )
 } 

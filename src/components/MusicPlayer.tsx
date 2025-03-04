@@ -57,6 +57,8 @@ export default function MusicPlayer() {
   const previousVolume = useRef(volume)
   const customInputRef = useRef<HTMLDivElement>(null);
 
+  const [tempVideoId, setTempVideoId] = useState('')
+
   const currentStream = streams[currentStreamIndex]
 
   // Load initial stream from localStorage
@@ -74,9 +76,11 @@ export default function MusicPlayer() {
   useEffect(() => {
     const storedCustomVideo = localStorage.getItem('customVideoId');
     const wasInCustomMode = localStorage.getItem('isCustomMode') === 'true';
-    
-    if (storedCustomVideo && wasInCustomMode) {
+
+    if (storedCustomVideo) {
       setCustomVideoId(storedCustomVideo);
+    }
+    if (wasInCustomMode) {
       setIsCustomMode(true);
     }
   }, []);
@@ -164,8 +168,10 @@ export default function MusicPlayer() {
       setIsPlaying(true)
       setCustomVideoError(false)
       localStorage.setItem('customVideoId', videoId)
+      setTempVideoId('')
     } else {
       setCustomVideoError(true)
+      setTempVideoId('')
     }
   }
 
@@ -194,11 +200,11 @@ export default function MusicPlayer() {
               type="text"
               placeholder="Paste YouTube URL"
               className="w-full bg-white/10 rounded-lg px-3 py-2 text-white/90 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
-              value={customVideoId}
-              onChange={(e) => setCustomVideoId(e.target.value)}
+              value={tempVideoId}
+              onChange={(e) => setTempVideoId(e.target.value)}
               onKeyDown={(e) => {
                 if (e.key === 'Enter') {
-                  handleCustomVideo(customVideoId);
+                  handleCustomVideo(tempVideoId);
                   setShowCustomInput(false);
                 }
               }}
@@ -212,28 +218,33 @@ export default function MusicPlayer() {
 
         {/* Header with Custom Toggle */}
         <div className="flex justify-between items-center mb-4">
-          <h3 className="text-white/90 font-medium text-sm">
-            {isCustomMode ? 'Custom Video' : 'Lofi Radio'}
-          </h3>
+          {isCustomMode ? (
+            <div className="flex flex-col items-start gap-2">
+              <button
+                onClick={() => setIsCustomMode(false)}
+                className="text-white/70 hover:text-white/90 bg-white/10 rounded-lg px-2 py-1 text-base transition-colors"
+              >
+                ⇦ Radio
+              </button>
+              <h3 className="text-white/90 font-medium text-sm">
+                Custom Video
+              </h3>
+            </div>
+          ) : (
+            <h3 className="text-white/90 font-medium text-sm">
+              Lofi Radio
+            </h3>
+          )}
           <div className="flex items-center gap-2">
             {isCustomMode ? (
-              <>
+              <div className="flex gap-2 self-start mt-0">
                 <button
                   onClick={() => setShowCustomInput(!showCustomInput)}
                   className="text-white/70 hover:text-white/90 text-sm transition-colors"
                 >
                   Change Video
                 </button>
-                <button
-                  onClick={() => {
-                    setIsCustomMode(false)
-                    localStorage.setItem('isCustomMode', 'false')
-                  }}
-                  className="text-white/70 hover:text-white/90 text-sm transition-colors"
-                >
-                  Switch to Radio
-                </button>
-              </>
+              </div>
             ) : (
               <button
                 onClick={() => {
@@ -259,16 +270,33 @@ export default function MusicPlayer() {
           </div>
         </div>
 
+        {isCustomMode && customVideoId == '' && (
+          // Simple empty state for when no video ID exists
+          <div className="w-full aspect-video bg-black/30 rounded-xl flex items-center justify-center mb-4">
+            <div className="text-center">
+              <p className="text-white/70 text-sm mb-2">No custom video selected</p>
+              <button
+                onClick={() => setShowCustomInput(true)}
+                className="px-3 py-1 bg-white/10 hover:bg-white/20 rounded text-white/90 text-xs"
+              >
+                Add YouTube URL
+              </button>
+            </div>
+          </div>
+        )}
+        <div className={`space-y-4 ${!isCustomMode ? 'hidden' : isCustomMode && customVideoId == '' ? 'hidden' : ''}`}>
+            <YouTubePlayer
+              videoId={isCustomMode ? customVideoId : currentStream.videoId}
+              isPlaying={isPlaying}
+              volume={volume}
+              isVisible={isCustomMode}
+              onError={() => setCustomVideoError(true)}
+            />
+        </div>
+
         {/* Player */}
         {isCustomMode ? (
           <div className="space-y-4">
-            <YouTubePlayer
-              videoId={customVideoId}
-              isPlaying={isPlaying}
-              volume={volume}
-              isVisible={true}
-              onError={() => setCustomVideoError(true)}
-            />
             {/* Volume Control Only */}
             <VolumeSlider initialVolume={volume} onVolumeChange={handleVolumeChange}/>
           </div>
@@ -292,15 +320,6 @@ export default function MusicPlayer() {
                   {currentStream.artist}
                 </p>
               </div>
-            </div>
-
-            {/* Hidden YouTube Player */}
-            <div className="hidden">
-              <YouTubePlayer
-                videoId={currentStream.videoId}
-                isPlaying={isPlaying}
-                volume={volume}
-              />
             </div>
           </>
         )}
