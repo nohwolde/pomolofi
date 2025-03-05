@@ -31,6 +31,7 @@ export default function Environment({ currentScene }: EnvironmentProps) {
 
   useEffect(() => {
     if (currentScene.type === 'video') {
+      setIsLoading(true)
       const video = document.createElement('video')
       video.src = currentScene.background as string
       video.preload = 'auto' // Force preload for current scene
