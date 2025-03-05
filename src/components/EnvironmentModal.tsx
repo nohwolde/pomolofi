@@ -7,7 +7,7 @@ import { useState, useEffect } from 'react'
 type Scene = {
   id: string
   name: string
-  background: any
+  background: string | any // StaticImageData
   type: 'image' | 'video'
 }
 
@@ -19,8 +19,22 @@ type EnvironmentModalProps = {
 }
 
 export default function EnvironmentModal({ isOpen, onClose, scenes, onSelectScene }: EnvironmentModalProps) {
-  const images = scenes.filter(scene => scene.type === 'image');
   const videos = scenes.filter(scene => scene.type === 'video');
+  const images = scenes.filter(scene => scene.type === 'image');
+
+  // Helper function to get thumbnail path for a scene
+  const getThumbnailPath = (scene: Scene): string => {
+    if (scene.type === 'image') return scene.background
+    
+    // For videos, extract the base path without extension
+    const videoPath = scene.background.toString()
+    const lastSlashIndex = videoPath.lastIndexOf('/')
+    const basePath = videoPath.substring(0, lastSlashIndex + 1)
+    const fileName = videoPath.substring(lastSlashIndex + 1).replace('.mp4', '')
+    
+    // Return the thumbnail path
+    return `${basePath}${fileName}-thumbnail.jpeg`
+  }
 
   return (
     <AnimatePresence mode="wait">
@@ -84,12 +98,17 @@ export default function EnvironmentModal({ isOpen, onClose, scenes, onSelectScen
                       whileTap={{ scale: 0.98 }}
                     >
                       <video
-                        src={scene.background}
-                        autoPlay
-                        loop
+                        src={`${scene.background}#t=0.5`}
+                        poster={getThumbnailPath(scene)}
                         muted
                         playsInline
+                        preload="none"
                         className="absolute inset-0 w-full h-full object-cover"
+                        onMouseEnter={(e) => e.currentTarget.play()}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.pause();
+                          e.currentTarget.currentTime = 0;
+                        }}
                       />
                       <div className="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-colors" />
                       <span className="absolute bottom-2 left-2 text-sm text-white font-medium">
