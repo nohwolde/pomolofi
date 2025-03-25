@@ -19,7 +19,10 @@ import { useAuthState } from 'react-firebase-hooks/auth'
 import { auth } from '@/lib/firebase'
 import { incrementBreakTime, incrementFocusTime, incrementTasksCompleted, updateDailyStats, getUserStats, incrementPomodoros } from '@/lib/stats'
 import { UserStatsData } from '@/types/stats'
-import Notes from '@/components/Notes'
+import dynamic from "next/dynamic";
+import FullscreenButton from '@/components/FullscreenButton'
+
+const Notes = dynamic(() => import('@/components/Notes'), { ssr: false })
 
 type TimerMode = 'pomodoro' | 'shortBreak' | 'longBreak'
 
@@ -223,7 +226,7 @@ export default function Home() {
 
   // Initialize audio
   useEffect(() => {
-    const audio = new Audio('/timer-complete.wav')
+    const audio = new Audio('/timer-complete.mp3')
     audio.preload = 'auto'
     setAlarmAudio(audio)
     
@@ -495,7 +498,7 @@ export default function Home() {
       {/* UI Layer */}
       <div className="absolute inset-0 pointer-events-auto">
         {/* Add UserButton near the top */}
-        <div className="absolute top-4 right-4 z-10 flex items-center gap-4">
+        <div className="absolute top-4 right-4 z-10 flex items-center gap-4 hidden md:flex">
           <FocusStats
             timeframe={timeframe}
             onTimeframeChange={setTimeframe}
@@ -594,10 +597,19 @@ export default function Home() {
           </div>
         )}
 
-        {/* Music Player */}
-        <div className="fixed bottom-4 left-8 flex gap-4">
-          <MusicPlayer />
-          <SoundPlayer />
+        {/* Audio Players */}
+        {/* <div className="fixed bottom-4 left-8 flex flex-col md:flex-row gap-4">
+          <div className="music-player-container">
+            <MusicPlayer />
+          </div>
+          <div className="sound-player-container">
+            <SoundPlayer />
+          </div>
+        </div> */}
+
+        <div className="fixed bottom-4 left-8 flex flex-col md:flex-row gap-4">
+            <MusicPlayer />
+            <SoundPlayer />
         </div>
 
         {/* Add Task Modal */}
@@ -658,6 +670,9 @@ export default function Home() {
           isOpen={isNotesOpen}
           onClose={() => setIsNotesOpen(false)}
         />
+
+        {/* Fullscreen button */}
+        <FullscreenButton />
       </div>
     </div>
   )

@@ -109,7 +109,7 @@ export default function TaskList({
       {activeTask ? (
         <div className="backdrop-blur-xl rounded-xl p-6 mb-4 max-w-sm shadow-xl 
           bg-gray-400/20 border border-white/10 transition-all duration-300 hover:shadow-2xl hover:bg-gray-400/30">
-          <div className="text-sm text-white/70 mb-2 uppercase tracking-wider font-medium">Current Focus</div>
+          <div className="text-sm text-white/70 mb-2 uppercase tracking-wider font-medium pt-4">Current Focus</div>
           <div className="text-xl text-white font-medium">{activeTask.title}</div>
           <div className="flex items-center justify-end mt-4">
             <button
@@ -125,7 +125,7 @@ export default function TaskList({
           onClick={onAddTask}
           className="backdrop-blur-xl rounded-xl p-6 mb-4 text-white/70 
             bg-gray-400/20 border border-white/10 hover:text-white hover:bg-gray-400/30 
-            transition-all duration-300 shadow-xl hover:shadow-2xl"
+            transition-all duration-300 shadow-xl hover:shadow-2xl mt-8 md:mt-0"
         >
           + Add your next task
         </button>
@@ -133,7 +133,7 @@ export default function TaskList({
 
       {/* Next Up Section */}
       <div className="backdrop-blur-xl rounded-xl p-6 w-[300px] shadow-xl 
-        bg-gray-400/20 border border-white/10 transition-all duration-300 hover:shadow-2xl hover:bg-gray-400/30">
+        bg-gray-400/20 border border-white/10 transition-all duration-300 hover:shadow-2xl hover:bg-gray-400/30 hidden md:block">
         <div className="flex justify-between items-center mb-4">
           <button 
             onClick={onToggleExpand}
@@ -222,7 +222,7 @@ export default function TaskList({
       {/* Completed Tasks Section */}
       <div className="backdrop-blur-xl rounded-xl p-6 w-[300px] shadow-xl 
         bg-gray-400/20 border border-white/10 transition-all duration-300 hover:shadow-2xl hover:bg-gray-400/30 
-        mt-4 max-h-60 overflow-y-auto">
+        mt-4 max-h-60 overflow-y-auto hidden md:block">
         <div className="flex justify-between items-center mb-4">
           <button 
             onClick={toggleCompletedTasks}

@@ -61,6 +61,11 @@ export default function MusicPlayer() {
 
   const currentStream = streams[currentStreamIndex]
 
+  const switchToRadio = () => {
+    setIsCustomMode(false)
+    localStorage.setItem('isCustomMode', 'false');
+  }
+
   // Load initial stream from localStorage
   useEffect(() => {
     const storedStreamId = localStorage.getItem('currentStreamId')
@@ -221,7 +226,7 @@ export default function MusicPlayer() {
           {isCustomMode ? (
             <div className="flex flex-col items-start gap-2">
               <button
-                onClick={() => setIsCustomMode(false)}
+                onClick={() =>switchToRadio()}
                 className="text-white/70 hover:text-white/90 bg-white/10 rounded-lg px-2 py-1 text-base transition-colors"
               >
                 ⇦ Radio

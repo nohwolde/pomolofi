@@ -59,7 +59,7 @@ export default function SideControls({
   const inactiveButtonClasses = `${buttonBaseClasses} bg-black/10 text-white hover:bg-white/20`
 
   return (
-    <div className="fixed right-4 top-1/2 -translate-y-1/2 z-10">
+    <div className="fixed right-4 top-20 md:top-1/2 md:-translate-y-1/2 z-10 ">
       <div className="flex flex-col items-center gap-3">
         {/* Timer section with progress */}
         <div className="bg-black/20 backdrop-blur-md rounded-2xl p-3 border border-white/10">
@@ -127,6 +127,7 @@ export default function SideControls({
         </div>
 
         {/* Other controls */}
+        {/* TODO: finish notes page */}
         {/* <button
           onClick={onTaskClick}
           className={inactiveButtonClasses}
