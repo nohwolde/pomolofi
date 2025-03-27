@@ -18,8 +18,8 @@ const streams = [
         id: 'afro-lofi',
         name: 'AfroLofi',
         artist: '@afrolofi',
-        videoId: '2OpuFmwuARc',
-        image: 'https://i.ytimg.com/vi/2OpuFmwuARc/hqdefault.jpg'
+        videoId: 'T8Cq3AXBEpM',
+        image: 'https://i.ytimg.com/vi/T8Cq3AXBEpM/hqdefault.jpg'
     },
     {
         id: 'jazz-lofi',
