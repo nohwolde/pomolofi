@@ -6,10 +6,8 @@ import { FaBolt, FaCheckCircle, FaClock, FaCoffee, FaFire, FaRegLightbulb, FaLis
 import { UserStatsData, DailyStats } from '@/types/stats'
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Area, ComposedChart, Bar, LabelList } from 'recharts'
 import { useAuth } from "@/lib/auth"
-import { updateDailyStats } from "@/lib/stats";
+import { updateDailyStats, getUserStats } from "@/lib/stats";
 import UserButton, { AuthModal } from './UserButton'
-import { auth } from '@/lib/firebase'
-import { useAuthState } from 'react-firebase-hooks/auth'
 
 interface FocusStatsProps {
   timeframe?: 'today' | '7days' | '28days'
@@ -26,11 +24,27 @@ const FocusStats = memo(function FocusStats({
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [showPremiumModal, setShowPremiumModal] = useState(false);
+  const [freshStats, setFreshStats] = useState<UserStatsData | undefined>(undefined);
+
+  // When the modal opens, fetch the latest stats from Firestore
+  useEffect(() => {
+    if (!isModalOpen || !user?.uid) return;
+    (async () => {
+      try {
+        const latest = await getUserStats(user.uid);
+        setFreshStats(latest);
+      } catch (error) {
+        console.error('Failed to refresh stats:', error);
+      }
+    })();
+  }, [isModalOpen, user]);
+
+  const effectiveStats = freshStats || userStats;
 
   const getLast5Days = () => {
     // get the last 5 days from the userStats
-    if (!userStats?.recentDays) return []
-    return userStats.recentDays.slice(-5).reverse()
+    if (!effectiveStats?.recentDays) return []
+    return effectiveStats.recentDays.slice(-5).reverse()
     // return Array.from({ length: 5 }, (_, i) => {
     //   const date = new Date()
     //   date.setDate(date.getDate() - i)
@@ -45,19 +59,19 @@ const FocusStats = memo(function FocusStats({
   }
 
   const getChartData = () => {
-    if (!userStats?.recentDays) {
+    if (!effectiveStats?.recentDays) {
       return getLast5Days()
     }
 
     switch (timeframe) {
       case 'today':
-        return [userStats.recentDays[userStats.recentDays.length - 1]]
+        return [effectiveStats.recentDays[effectiveStats.recentDays.length - 1]]
       
       case '7days':
-        return userStats.recentDays.slice(-7)
+        return effectiveStats.recentDays.slice(-7)
       
       case '28days':
-        return userStats.recentDays
+        return effectiveStats.recentDays
     }
   }
   
@@ -66,7 +80,7 @@ const FocusStats = memo(function FocusStats({
 
   // Then define getDisplayStats using the chartData
   const getDisplayStats = () => {
-    if (!userStats?.recentDays) return {
+    if (!effectiveStats?.recentDays) return {
       focusTime: 0,
       breakTime: 0,
       pomodorosCompleted: 0,
@@ -74,10 +88,10 @@ const FocusStats = memo(function FocusStats({
     }
 
     const relevantDays = timeframe === 'today'
-      ? [userStats.recentDays[userStats.recentDays.length - 1]]
+      ? [effectiveStats.recentDays[effectiveStats.recentDays.length - 1]]
       : timeframe === '7days'
-        ? userStats.recentDays.slice(-7)
-        : userStats.recentDays
+        ? effectiveStats.recentDays.slice(-7)
+        : effectiveStats.recentDays
 
     return {
       focusTime: relevantDays.reduce((sum, day) => sum + (day.focusTime || 0), 0),
