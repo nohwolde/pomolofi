@@ -18,7 +18,7 @@ const streams = [
         id: 'afro-lofi',
         name: 'AfroLofi',
         artist: '@afrolofi',
-        videoId: 'XZq22QQR2zM',
+        videoId: '-988a92R3pk',
         image: 'https://i.ytimg.com/vi/2OpuFmwuARc/hqdefault.jpg'
     },
     {
@@ -43,6 +43,7 @@ const streams = [
         image: 'https://i.ytimg.com/vi/5yx6BWlEVcY/hqdefault.jpg'
     }
 ]
+
 
 export default function MusicPlayer() {
   const [currentStreamIndex, setCurrentStreamIndex] = useState(0)
