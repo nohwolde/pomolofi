@@ -11,6 +11,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { FaPlay, FaPause, FaChevronLeft, FaChevronRight, FaVolumeUp, FaFire } from 'react-icons/fa'
 import { WiRaindrops, WiRain } from 'react-icons/wi'
 import { GiWaveStrike } from 'react-icons/gi'
+import { getBlobUrl } from '@/lib/blob-urls'
 
 type Sound = {
   id: string
@@ -24,28 +25,28 @@ const sounds: Sound[] = [
   {
     id: 'light-rain',
     name: 'Light Rain',
-    file: '/sounds/light-rain.mp3',
+    file: getBlobUrl('sounds', 'light-rain.mp3'),
     icon: <WiRaindrops size={24} />,
     description: 'Gentle rainfall on a quiet day'
   },
   {
     id: 'heavy-rain',
     name: 'Heavy Rain',
-    file: '/sounds/heavy-rain.mp3',
+    file: getBlobUrl('sounds', 'heavy-rain.mp3'),
     icon: <WiRain size={24} />,
     description: 'Strong rainfall with subtle thunder'
   },
   {
     id: 'burning-fire',
     name: 'Burning Fire',
-    file: '/sounds/burning-fire.mp3',
+    file: getBlobUrl('sounds', 'burning-fire.mp3'),
     icon: <FaFire size={20} />,
     description: 'Crackling fireplace ambience'
   },
   {
     id: 'ocean-waves',
     name: 'Ocean Waves',
-    file: '/sounds/ocean-waves.mp3',
+    file: getBlobUrl('sounds', 'ocean-waves.mp3'),
     icon: <GiWaveStrike size={22} />,
     description: 'Calming waves on a peaceful beach'
   }

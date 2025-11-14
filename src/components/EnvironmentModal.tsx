@@ -3,6 +3,7 @@
 import { AnimatePresence, motion } from 'framer-motion'
 import Image from 'next/image'
 import { useState, useEffect } from 'react'
+import { getBlobUrl } from '@/lib/blob-urls'
 
 type Scene = {
   id: string
@@ -26,14 +27,12 @@ export default function EnvironmentModal({ isOpen, onClose, scenes, onSelectScen
   const getThumbnailPath = (scene: Scene): string => {
     if (scene.type === 'image') return scene.background
     
-    // For videos, extract the base path without extension
+    // For videos, extract the filename without extension
     const videoPath = scene.background.toString()
-    const lastSlashIndex = videoPath.lastIndexOf('/')
-    const basePath = videoPath.substring(0, lastSlashIndex + 1)
-    const fileName = videoPath.substring(lastSlashIndex + 1).replace('.mp4', '')
+    const fileName = videoPath.substring(videoPath.lastIndexOf('/') + 1).replace('.mp4', '')
     
-    // Return the thumbnail path
-    return `${basePath}${fileName}-thumbnail.jpeg`
+    // Return the blob URL for the thumbnail
+    return getBlobUrl('scenes', `${fileName}-thumbnail.jpeg`)
   }
 
   return (

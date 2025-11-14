@@ -30,4 +30,9 @@ yarn-error.log*
 
 # typescript
 *.tsbuildinfo
-next-env.d.ts 
+next-env.d.ts
+
+# blob migration
+scripts/blob-urls.json
+scripts/update-blob-urls.mjs
+scripts/migrate-to-blob.mjs

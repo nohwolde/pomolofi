@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import Image, { StaticImageData } from 'next/image'
 import { AnimatePresence, motion } from 'framer-motion'
+import { getBlobUrl } from '@/lib/blob-urls'
 
 type Scene = {
   id: string
@@ -22,11 +23,9 @@ export default function Environment({ currentScene }: EnvironmentProps) {
     if (scene.type === 'image') return scene.background as string
     
     const videoPath = scene.background.toString()
-    const lastSlashIndex = videoPath.lastIndexOf('/')
-    const basePath = videoPath.substring(0, lastSlashIndex + 1)
-    const fileName = videoPath.substring(lastSlashIndex + 1).replace('.mp4', '')
+    const fileName = videoPath.substring(videoPath.lastIndexOf('/') + 1).replace('.mp4', '')
     
-    return `${basePath}${fileName}-thumbnail.jpeg`
+    return getBlobUrl('scenes', `${fileName}-thumbnail.jpeg`)
   }
 
   useEffect(() => {

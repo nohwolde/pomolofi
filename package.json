@@ -6,7 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "migrate:blob": "node scripts/migrate-to-blob.mjs",
+    "update-blob-urls": "node scripts/update-blob-urls.mjs"
   },
   "dependencies": {
     "@blocknote/core": "^0.25.1",
@@ -17,6 +19,8 @@
     "@lexical/react": "^0.24.0",
     "@lexical/rich-text": "^0.24.0",
     "@notionhq/client": "^2.2.15",
+    "@vercel/blob": "^0.27.3",
+    "dotenv": "^16.4.5",
     "firebase": "^11.2.0",
     "framer-motion": "^10.16.4",
     "lexical": "^0.24.0",

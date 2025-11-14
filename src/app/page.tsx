@@ -7,8 +7,7 @@ import TaskList, { Task } from '@/components/TaskList'
 import SideControls from '@/components/SideControls'
 import MusicPlayer from '@/components/MusicPlayer'
 import TimerCompleteModal from '../components/TimerCompleteModal'
-import beachImg from '@/scenes/beach.jpg'
-import cafeImg from '@/scenes/cozy-cafe.jpg'
+// Using blob storage for all scenes now
 import { motion } from 'framer-motion'
 import EnvironmentModal from '@/components/EnvironmentModal'
 import { StaticImageData } from 'next/image'
@@ -22,6 +21,7 @@ import { UserStatsData } from '@/types/stats'
 import dynamic from "next/dynamic";
 import FullscreenButton from '@/components/FullscreenButton'
 import PoweredBy from '@/components/PoweredBy'
+import { getBlobUrl } from '@/lib/blob-urls'
 
 const Notes = dynamic(() => import('@/components/Notes'), { ssr: false })
 
@@ -38,85 +38,85 @@ const scenes: Record<string, Scene> = {
   "cozy-cafe": {
     id: 'cozy-cafe',
     name: 'Cozy Café',
-    background: cafeImg,
+    background: getBlobUrl('scenes', 'cozy-cafe.jpg'),
     type: 'image',
   },
   "beach": {
     id: 'beach',
     name: 'Beach',
-    background: beachImg,
+    background: getBlobUrl('scenes', 'beach.jpg'),
     type: 'image',
   },
   "snow": {
     id: 'snow',
     name: 'Snowy Scene',
-    background: '/scenes/0snow.mp4',  // Path from public folder
+    background: getBlobUrl('scenes', 'snow.mp4'),
     type: 'video',
   },
   "winter-city": {
     id: 'winter-city',
     name: 'Winter City',
-    background: '/scenes/winter-city.mp4',
+    background: getBlobUrl('scenes', 'winter-city.mp4'),
     type: 'video',
   },
   "sunbeam-forest": {
     id: 'sunbeam-forest',
     name: 'Sunbeam Forest',
-    background: '/scenes/sunbeam-forest.mp4',
+    background: getBlobUrl('scenes', 'sunbeam-forest.mp4'),
     type: 'video',
   },
   "summer-village": {
     id: 'summer-village',
     name: 'Summer Village',
-    background: '/scenes/summer-village.mp4',
+    background: getBlobUrl('scenes', 'summer-village.mp4'),
     type: 'video',
   },
   "sunset-beach": {
     id: 'sunset-beach',
     name: 'Sunset Beach',
-    background: '/scenes/sunset-beach.mp4',
+    background: getBlobUrl('scenes', 'sunset-beach.mp4'),
     type: 'video',
   },
   "autumn-lake": {
     id: 'autumn-lake',
     name: 'Autumn Lake',
-    background: '/scenes/autumn-lake.mp4',
+    background: getBlobUrl('scenes', 'autumn-lake.mp4'),
     type: 'video',
   },
   "cherry-blossom-lake": {
     id: 'cherry-blossom-lake',
     name: 'Cherry Blossom Lake',
-    background: '/scenes/cherry-blossom-lake.mp4',
+    background: getBlobUrl('scenes', 'cherry-blossom-lake.mp4'),
     type: 'video',
   },
   "starry-night": {
     id: 'starry-night',
     name: 'Starry Night',
-    background: '/scenes/starry-night.mp4',
+    background: getBlobUrl('scenes', 'starry-night.mp4'),
     type: 'video',
   },
   "charming-cafe": {
     id: 'charming-cafe',
     name: 'Charming Cafe',
-    background: '/scenes/charming-cafe.mp4',
+    background: getBlobUrl('scenes', 'charming-cafe.mp4'),
     type: 'video',
   },
   "magical-forest": {
     id: 'magical-forest',
     name: 'Magical Forest',
-    background: '/scenes/magical-forest.mp4',  // Path from public folder
+    background: getBlobUrl('scenes', 'magical-forest.mp4'),
     type: 'video',
   },
   "black-hole": {
     id: 'black-hole',
     name: 'Black Hole',
-    background: '/scenes/black-hole.mp4',  // Path from public folder
+    background: getBlobUrl('scenes', 'black-hole.mp4'),
     type: 'video',
   },
   "dark-star": {
     id: 'dark-star',
     name: 'Dark Star',
-    background: '/scenes/dark-star.mp4',
+    background: getBlobUrl('scenes', 'dark-star.mp4'),
     type: 'video',
   }
   // Add more scenes here
@@ -227,7 +227,7 @@ export default function Home() {
 
   // Initialize audio
   useEffect(() => {
-    const audio = new Audio('/timer-complete.mp3')
+    const audio = new Audio(getBlobUrl('assets', 'timer-complete.mp3'))
     audio.preload = 'auto'
     setAlarmAudio(audio)
     

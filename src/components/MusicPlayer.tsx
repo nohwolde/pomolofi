@@ -5,6 +5,7 @@ import YouTubePlayer from './YouTubePlayer'
 import { FaPlay, FaPause, FaBackward, FaForward, FaVolumeMute, FaVolumeUp } from 'react-icons/fa'
 import { motion } from 'framer-motion'
 import VolumeSlider from './VolumeSlider'
+import { getBlobUrl } from '@/lib/blob-urls'
 
 const streams = [
     {
@@ -33,7 +34,7 @@ const streams = [
         name: 'Chill Lofi',
         artist: '@ChillwithTaiki',
         videoId: 'qH3fETPsqXU',
-        image: '/chill-with-taiki.png'
+        image: getBlobUrl('assets', 'chill-with-taiki.png')
     },
     {
         id: 'chillhop-lofi',
