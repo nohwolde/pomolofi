@@ -1,6 +1,8 @@
 {
   "name": "pomolofi",
   "version": "1.0.0",
+  "repository": "https://github.com/nohwolde/pomolofi",
+  "description": "A peaceful productivity tracker. Pomodoro timer, Lofi Radio Streams, Nature sounds and Live backgrounds.",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
