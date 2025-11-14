@@ -21,6 +21,7 @@ import { incrementBreakTime, incrementFocusTime, incrementTasksCompleted, update
 import { UserStatsData } from '@/types/stats'
 import dynamic from "next/dynamic";
 import FullscreenButton from '@/components/FullscreenButton'
+import PoweredBy from '@/components/PoweredBy'
 
 const Notes = dynamic(() => import('@/components/Notes'), { ssr: false })
 
@@ -670,6 +671,9 @@ export default function Home() {
           isOpen={isNotesOpen}
           onClose={() => setIsNotesOpen(false)}
         />
+
+        {/* Powered by Highfly */}
+        <PoweredBy />
 
         {/* Fullscreen button */}
         <FullscreenButton />
