@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef, useCallback } from 'react'
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import Environment from '@/components/Environment'
 import TimerModal from '@/components/TimerModal'
 import TaskList, { Task } from '@/components/TaskList'
@@ -22,6 +22,8 @@ import dynamic from "next/dynamic";
 import FullscreenButton from '@/components/FullscreenButton'
 import PoweredBy from '@/components/PoweredBy'
 import { getBlobUrl } from '@/lib/blob-urls'
+import { PomodoroPreset } from '@/types/preset'
+import { getPresetsFromStorage, getActivePresetId, getActiveDurations, persistPresets, syncPresetsOnLogin, resetDefaultPresets } from '@/lib/presets'
 
 const Notes = dynamic(() => import('@/components/Notes'), { ssr: false })
 
@@ -170,12 +172,13 @@ export default function Home() {
   const [userStats, setUserStats] = useState<UserStatsData | null>(null);
   const [timeframe, setTimeframe] = useState<'today' | '7days' | '28days'>('today');
 
-  // Timer durations from localStorage
-  const [timerDurations, setTimerDurations] = useState<{ pomodoro: number; shortBreak: number; longBreak: number }>({
-    pomodoro: 25,
-    shortBreak: 5,
-    longBreak: 15,
-  });
+  // Presets state
+  const [presets, setPresets] = useState<PomodoroPreset[]>(() => getPresetsFromStorage())
+  const [activePresetId, setActivePresetId] = useState<string>(() => getActivePresetId())
+  const timerDurations = useMemo(
+    () => getActiveDurations(presets, activePresetId),
+    [presets, activePresetId]
+  )
 
   // Tasks state
   const [tasks, setTasks] = useState<Task[]>([]);
@@ -195,10 +198,8 @@ export default function Home() {
       setTasks(JSON.parse(storedTasks));
     }
 
-    const storedDurations = localStorage.getItem('timerDurations');
-    if (storedDurations) {
-      setTimerDurations(JSON.parse(storedDurations));
-    }
+    setPresets(getPresetsFromStorage())
+    setActivePresetId(getActivePresetId())
 
     // Load the current scene ID from localStorage
     const storedSceneId = localStorage.getItem('currentSceneId')
@@ -445,6 +446,46 @@ export default function Home() {
     setIsEnvironmentModalOpen(false);
   }
 
+  // Preset handlers
+  const handlePresetsChange = (updated: PomodoroPreset[]) => {
+    setPresets(updated)
+    persistPresets(updated, activePresetId, user?.uid)
+  }
+
+  const handleActivePresetChange = (id: string) => {
+    setActivePresetId(id)
+    persistPresets(presets, id, user?.uid)
+  }
+
+  const handlePresetDurationsChange = (presetId: string, field: 'pomodoro' | 'shortBreak' | 'longBreak', value: number) => {
+    const updated = presets.map((p) =>
+      p.id === presetId ? { ...p, [field]: value } : p
+    )
+    setPresets(updated)
+    persistPresets(updated, activePresetId, user?.uid)
+  }
+
+  const handleResetDefaults = () => {
+    const updated = resetDefaultPresets(presets)
+    setPresets(updated)
+    persistPresets(updated, activePresetId, user?.uid)
+  }
+
+  const handleSwitchPreset = (presetId: string) => {
+    setActivePresetId(presetId)
+    persistPresets(presets, presetId, user?.uid)
+  }
+
+  // Sync presets on login
+  useEffect(() => {
+    if (user?.uid) {
+      syncPresetsOnLogin(user.uid).then(({ presets: synced, activePresetId: syncedId }) => {
+        setPresets(synced)
+        setActivePresetId(syncedId)
+      })
+    }
+  }, [user?.uid])
+
   // Save stats whenever they change
   useEffect(() => {
     if (!isInitialLoad) {
@@ -593,7 +634,12 @@ export default function Home() {
               onClose={() => setIsTimerOpen(false)}
               onStart={handleTimerStart}
               currentMode={timerMode}
-              onDurationsChange={setTimerDurations}
+              presets={presets}
+              activePresetId={activePresetId}
+              onActivePresetChange={handleActivePresetChange}
+              onPresetDurationsChange={handlePresetDurationsChange}
+              onPresetsChange={handlePresetsChange}
+              onResetDefaults={handleResetDefaults}
             />
           </div>
         )}
@@ -665,6 +711,9 @@ export default function Home() {
           isOpen={isTimerCompleteModalOpen}
           onClose={handleCloseTimerCompleteModal}
           alarmAudio={alarmAudio}
+          presets={presets}
+          activePresetId={activePresetId}
+          onSwitchPreset={handleSwitchPreset}
         />
 
         <Notes 
