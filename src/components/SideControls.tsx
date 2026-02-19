@@ -1,5 +1,6 @@
 'use client'
 
+import { useState, useEffect, useRef } from 'react'
 import { AnimatePresence } from 'framer-motion'
 import { FaRegStickyNote } from 'react-icons/fa'
 import MiniTimer from './MiniTimer'
@@ -40,6 +41,29 @@ export default function SideControls({
   completedMode,
   pomodorosCompleted,
 }: SideControlsProps) {
+  const [confirmingStop, setConfirmingStop] = useState(false)
+  const confirmTimeout = useRef<ReturnType<typeof setTimeout>>()
+
+  useEffect(() => {
+    return () => {
+      if (confirmTimeout.current) clearTimeout(confirmTimeout.current)
+    }
+  }, [])
+
+  useEffect(() => {
+    if (!isTimerActive) setConfirmingStop(false)
+  }, [isTimerActive])
+
+  const handleStopClick = () => {
+    if (confirmingStop) {
+      setConfirmingStop(false)
+      if (confirmTimeout.current) clearTimeout(confirmTimeout.current)
+      onTimerStop()
+    } else {
+      setConfirmingStop(true)
+      confirmTimeout.current = setTimeout(() => setConfirmingStop(false), 4000)
+    }
+  }
   const buttonBaseClasses = `
     w-14 h-14 rounded-full 
     flex items-center justify-center 
@@ -85,32 +109,41 @@ export default function SideControls({
           </AnimatePresence>
           
           {/* Timer controls */}
-          <div className="flex gap-2 justify-center">
+          <div className="flex flex-col gap-2 items-center">
             {isTimerActive ? (
               <>
-                <button
-                  onClick={onTimerToggle}
-                  className={activeButtonClasses}
-                  title={isTimerPaused ? "Resume Timer" : "Pause Timer"}
-                >
-                  <svg className="w-7 h-7 relative z-10 drop-shadow-[0_2px_3px_rgba(0,0,0,0.5)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    {isTimerPaused ? (
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
-                    ) : (
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    )}
-                  </svg>
-                </button>
-                <button
-                  onClick={onTimerStop}
-                  className={inactiveButtonClasses}
-                  title="Stop Timer"
-                >
-                  <svg className="w-7 h-7 relative z-10 drop-shadow-[0_2px_3px_rgba(0,0,0,0.5)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 10a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1v-4z" />
-                  </svg>
-                </button>
+                <div className="flex gap-2 justify-center">
+                  <button
+                    onClick={onTimerToggle}
+                    className={activeButtonClasses}
+                    title={isTimerPaused ? "Resume Timer" : "Pause Timer"}
+                  >
+                    <svg className="w-7 h-7 relative z-10 drop-shadow-[0_2px_3px_rgba(0,0,0,0.5)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      {isTimerPaused ? (
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+                      ) : (
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      )}
+                    </svg>
+                  </button>
+                  <button
+                    onClick={handleStopClick}
+                    className={inactiveButtonClasses}
+                    title="End session"
+                  >
+                    <svg className="w-7 h-7 relative z-10 drop-shadow-[0_2px_3px_rgba(0,0,0,0.5)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                </div>
+                {confirmingStop && (
+                  <button
+                    onClick={handleStopClick}
+                    className="cursor-pointer w-full px-3 py-1.5 rounded-lg bg-red-500/25 text-red-300 text-xs font-medium hover:bg-red-500/40 transition-colors ring-1 ring-red-400/20"
+                  >
+                    End session?
+                  </button>
+                )}
               </>
             ) : (
               <button
