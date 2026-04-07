@@ -442,6 +442,7 @@ export default function MusicPlayer() {
           {/* YouTube Player */}
           <div className={`space-y-4 ${!isCustomMode || !hasCustomContent ? 'hidden' : ''}`}>
             <YouTubePlayer
+              key={isCustomMode && customContentType === 'playlist' ? `pl-${customPlaylistId}` : 'video'}
               videoId={isCustomMode ? customVideoId : currentStream.videoId}
               playlistId={isCustomMode && customContentType === 'playlist' ? customPlaylistId : undefined}
               isPlaying={isPlaying}

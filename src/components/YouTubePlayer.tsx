@@ -26,24 +26,27 @@ export default function YouTubePlayer({
   isVisible = false,
   onError
 }: YouTubePlayerProps) {
-  const playerRef = useRef<HTMLDivElement | null>(null)
+  const containerRef = useRef<HTMLDivElement>(null)
   const [player, setPlayer] = useState<any>(null)
-  const prevPlaylistId = useRef(playlistId)
   const prevVideoId = useRef(videoId)
 
   useEffect(() => {
-    const tag = document.createElement('script')
-    tag.src = 'https://www.youtube.com/iframe_api'
-    const firstScriptTag = document.getElementsByTagName('script')[0]
-    firstScriptTag?.parentNode?.insertBefore(tag, firstScriptTag)
+    let destroyed = false
+    let ytPlayer: any = null
 
-    const onYouTubeIframeAPIReady = () => {
-      if (!playerRef.current) return;
+    const initPlayer = () => {
+      if (destroyed || !containerRef.current) return
+
+      // Create a child element for YouTube to replace with its iframe.
+      // This keeps the React-managed container intact during unmount.
+      const el = document.createElement('div')
+      containerRef.current.appendChild(el)
 
       const playerVars: Record<string, any> = {
         controls: 1,
         modestbranding: 1,
         rel: 0,
+        autoplay: 1,
       }
 
       if (playlistId) {
@@ -53,63 +56,77 @@ export default function YouTubePlayer({
         playerVars.loop = 1
         playerVars.playlist = videoId
       }
-      
-      const newPlayer = new window.YT.Player(playerRef.current, {
+
+      const config: Record<string, any> = {
         height: '180',
         width: '320',
-        videoId: playlistId ? undefined : videoId,
         playerVars,
         events: {
           onReady: (event: any) => {
+            if (destroyed) return
+            event.target.setVolume(volume)
             event.target.playVideo()
-            setPlayer(newPlayer)
+            setPlayer(ytPlayer)
           },
           onError: () => onError?.()
         }
-      })
+      }
+
+      if (!playlistId && videoId) {
+        config.videoId = videoId
+      }
+
+      ytPlayer = new window.YT.Player(el, config)
     }
 
-    if (window.YT) {
-      onYouTubeIframeAPIReady()
+    if (!document.querySelector('script[src*="youtube.com/iframe_api"]')) {
+      const tag = document.createElement('script')
+      tag.src = 'https://www.youtube.com/iframe_api'
+      const firstScriptTag = document.getElementsByTagName('script')[0]
+      firstScriptTag?.parentNode?.insertBefore(tag, firstScriptTag)
+    }
+
+    if (window.YT && window.YT.Player) {
+      initPlayer()
     } else {
-      window.onYouTubeIframeAPIReady = onYouTubeIframeAPIReady
+      const prevCallback = window.onYouTubeIframeAPIReady
+      window.onYouTubeIframeAPIReady = () => {
+        prevCallback?.()
+        initPlayer()
+      }
+    }
+
+    return () => {
+      destroyed = true
+      if (ytPlayer) {
+        try { ytPlayer.destroy() } catch {}
+      }
     }
   }, [])
 
   useEffect(() => {
-    if (!player) return
-
-    if (playlistId && playlistId !== prevPlaylistId.current) {
-      player.loadPlaylist({ listType: 'playlist', list: playlistId })
-      prevPlaylistId.current = playlistId
-      prevVideoId.current = videoId
-    } else if (!playlistId && videoId !== prevVideoId.current) {
+    if (!player || playlistId) return
+    if (videoId && videoId !== prevVideoId.current) {
       player.loadVideoById(videoId)
       prevVideoId.current = videoId
-      prevPlaylistId.current = undefined
     }
-  }, [videoId, playlistId, player])
+  }, [videoId, player, playlistId])
 
   useEffect(() => {
     if (player) {
-      if (isPlaying) {
-        player.playVideo()
-      } else {
-        player.pauseVideo()
-      }
+      if (isPlaying) player.playVideo()
+      else player.pauseVideo()
     }
   }, [isPlaying, player])
 
   useEffect(() => {
-    if (player) {
-      player.setVolume(volume)
-    }
+    if (player) player.setVolume(volume)
   }, [volume, player])
 
   return (
     <div 
-      ref={playerRef} 
-      className={`rounded-xl overflow-hidden transition-all duration-300 mb-4`}
+      ref={containerRef} 
+      className="rounded-xl overflow-hidden transition-all duration-300 mb-4"
     />
   )
 }
